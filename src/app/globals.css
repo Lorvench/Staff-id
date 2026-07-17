@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  @apply bg-paper-soft text-ink;
+}
+
+/* Ambient page background — quiet, premium, never competes with the card. */
+.page-backdrop {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #eef1f8 0%, rgba(238, 241, 248, 0) 60%),
+    linear-gradient(180deg, #f6f7f9 0%, #eef0f4 100%);
+}
+
+/* Small-caps label used across cards ("ROLE", "VENUES", ...) */
+.field-label {
+  @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted;
+}
+
+/* Skeleton shimmer for loading states (avoids spinners for the main card). */
+.skeleton {
+  @apply relative overflow-hidden bg-paper-sunken;
+}
+.skeleton::after {
+  content: "";
+  @apply absolute inset-0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

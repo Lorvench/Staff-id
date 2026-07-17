@@ -1,0 +1,11 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="John Doe">
+  <defs>
+    <linearGradient id="bgJD" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8ecfb"/>
+      <stop offset="1" stop-color="#d7defa"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bgJD)"/>
+  <circle cx="128" cy="98" r="44" fill="#3b5bdb"/>
+  <path d="M40 232c0-48 39-82 88-82s88 34 88 82" fill="#3b5bdb"/>
+</svg>

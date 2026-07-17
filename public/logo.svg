@@ -1,0 +1,35 @@
+<svg width="300" height="160" viewBox="0 0 300 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LHP — Lion Hospitality Partners">
+  <defs>
+    <linearGradient id="lhpInk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a3524"/>
+      <stop offset="1" stop-color="#20150c"/>
+    </linearGradient>
+    <linearGradient id="lhpGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3d888"/>
+      <stop offset="0.5" stop-color="#c8a13e"/>
+      <stop offset="1" stop-color="#9a6a20"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Letters: L  H  P (serif, bold) -->
+  <g fill="url(#lhpInk)" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="130">
+    <text x="6" y="126">L</text>
+    <text x="120" y="126">H</text>
+    <text x="216" y="126">P</text>
+  </g>
+
+  <!-- Golden key forming the divider between L and H -->
+  <g transform="translate(103.5 0)" fill="url(#lhpGold)" stroke="#7c5416" stroke-width="0.6">
+    <!-- crown -->
+    <path d="M-13 20 L-8 8 L-3 16 L0 4 L3 16 L8 8 L13 20 Z"/>
+    <rect x="-13" y="20" width="26" height="5" rx="1.5"/>
+    <!-- bow (ring) -->
+    <circle cx="0" cy="46" r="17"/>
+    <circle cx="0" cy="46" r="7.5" fill="#ffffff" stroke="none"/>
+    <!-- shaft -->
+    <rect x="-4" y="61" width="8" height="78" rx="2"/>
+    <!-- bit / teeth -->
+    <rect x="4" y="118" width="12" height="6" rx="1"/>
+    <rect x="4" y="129" width="8" height="6" rx="1"/>
+  </g>
+</svg>
