@@ -1,28 +1,18 @@
 import Image from "next/image";
-import type { StaffProfile } from "@/lib/types";
+import type { StaffDetail } from "@/lib/staff-service";
 import StatusBadge from "@/components/StatusBadge";
+import StaffPhoto from "@/components/StaffPhoto";
 import RoleList from "@/components/RoleList";
 import VenueList from "@/components/VenueList";
 import QrCode from "@/components/QrCode";
 import ShareButton from "@/components/ShareButton";
-
-interface StaffCardProps {
-  staff: StaffProfile;
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
+import { formatLongDate } from "@/lib/format";
 
 /**
  * The premium Digital Staff ID card.
  * Fixed vertical rhythm: logo -> photo -> name/ID/status -> details -> QR -> actions.
  */
-export default function StaffCard({ staff }: StaffCardProps) {
+export default function StaffCard({ staff }: { staff: StaffDetail }) {
   return (
     <article className="animate-fade-scale-in w-full max-w-sm overflow-hidden rounded-3xl bg-paper shadow-card-lg">
       {/* Header — company logo */}
@@ -40,23 +30,15 @@ export default function StaffCard({ staff }: StaffCardProps) {
       {/* Photo */}
       <div className="mt-6 flex justify-center">
         <div className="rounded-full bg-gradient-to-b from-brand-soft to-paper-sunken p-1.5 shadow-sm">
-          <Image
-            src={staff.photoUrl}
-            alt={staff.fullName}
-            width={128}
-            height={128}
-            className="h-32 w-32 rounded-full object-cover"
-          />
+          <StaffPhoto src={staff.photoUrl} name={staff.name} size={128} />
         </div>
       </div>
 
       {/* Name / ID / status */}
       <div className="mt-5 flex flex-col items-center gap-2 px-8 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-ink">
-          {staff.fullName}
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight text-ink">{staff.name}</h1>
         <p className="font-mono text-sm font-medium tracking-wide text-ink-muted">
-          {staff.staffId}
+          {staff.stfId}
         </p>
         <div className="mt-1">
           <StatusBadge status={staff.status} />
@@ -71,7 +53,7 @@ export default function StaffCard({ staff }: StaffCardProps) {
         <div>
           <p className="field-label">Date Engaged</p>
           <p className="mt-1 text-[15px] font-medium text-ink-soft">
-            {formatDate(staff.dateEngaged)}
+            {formatLongDate(staff.dateEngaged)}
           </p>
         </div>
       </div>

@@ -20,8 +20,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+!.env.example
+.claude
 
+# prisma generated client
+/src/generated
 # typescript
 *.tsbuildinfo
 next-env.d.ts

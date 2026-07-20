@@ -1,39 +1,18 @@
-export type EmploymentStatus = "ACTIVE" | "DISENGAGED";
+import type { StaffStatus } from "@/generated/prisma/client";
 
-/** Full staff record returned to the authenticated Digital Staff ID page. */
-export interface StaffProfile {
-  staffId: string; // e.g. "STF-000247"
-  fullName: string;
-  photoUrl: string;
-  roles: string[];
-  venues: string[];
-  status: EmploymentStatus;
-  dateEngaged: string; // ISO date string
-  verificationUrl: string; // the URL encoded into the QR code (built by the backend)
-}
+/**
+ * Shared display types. The database enum is the single source of truth for
+ * status — this alias just keeps the UI vocabulary readable.
+ */
+export type EmploymentStatus = StaffStatus;
 
-/** Public verification result returned by the /verify endpoint. */
-export type VerificationResult =
-  | {
-      outcome: "VERIFIED";
-      staff: PublicStaffInfo;
-      verifiedAt: string; // ISO timestamp
-    }
-  | {
-      outcome: "DISENGAGED";
-      staff: PublicStaffInfo;
-      verifiedAt: string;
-    }
-  | {
-      outcome: "NOT_FOUND"; // malformed / expired / unknown token
-    };
+export type { StaffDetail, PublicStaff } from "@/lib/staff-service";
 
-/** The reduced staff info that is safe to show on the public verification page. */
-export interface PublicStaffInfo {
-  staffId: string;
-  fullName: string;
-  photoUrl: string;
-  roles: string[];
-  venues: string[];
-  status: EmploymentStatus;
-}
+export type AuditEntry = {
+  id: string;
+  field: string;
+  oldValue: string | null;
+  newValue: string | null;
+  actorEmail: string;
+  timestamp: string;
+};

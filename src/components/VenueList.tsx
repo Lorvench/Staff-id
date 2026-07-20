@@ -8,6 +8,9 @@ export default function VenueList({ venues }: VenueListProps) {
   return (
     <div>
       <p className="field-label">{label}</p>
+      {venues.length === 0 && (
+        <p className="mt-1 text-[15px] font-medium text-ink-soft">—</p>
+      )}
       <ul className="mt-2 flex flex-wrap gap-2">
         {venues.map((venue) => (
           <li

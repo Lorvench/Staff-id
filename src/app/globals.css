@@ -15,11 +15,11 @@ body {
   @apply bg-paper-soft text-ink;
 }
 
-/* Ambient page background — quiet, premium, never competes with the card. */
+/* Ambient page background — warm ivory, quiet, never competes with the card. */
 .page-backdrop {
   background:
-    radial-gradient(1200px 600px at 50% -10%, #eef1f8 0%, rgba(238, 241, 248, 0) 60%),
-    linear-gradient(180deg, #f6f7f9 0%, #eef0f4 100%);
+    radial-gradient(1200px 600px at 50% -10%, #f6efdf 0%, rgba(246, 239, 223, 0) 60%),
+    linear-gradient(180deg, #faf8f4 0%, #f0ece4 100%);
 }
 
 /* Small-caps label used across cards ("ROLE", "VENUES", ...) */

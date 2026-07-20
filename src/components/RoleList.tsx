@@ -9,7 +9,7 @@ export default function RoleList({ roles }: RoleListProps) {
     <div>
       <p className="field-label">{label}</p>
       <p className="mt-1 text-[15px] font-medium text-ink-soft">
-        {roles.join(" · ")}
+        {roles.length ? roles.join(" · ") : "—"}
       </p>
     </div>
   );
