@@ -22,6 +22,21 @@ body {
     linear-gradient(180deg, #faf8f4 0%, #f0ece4 100%);
 }
 
+/**
+ * Verdict backdrops for the public scan page.
+ *
+ * The page is read at arm's length, often in low venue light, and the answer
+ * has to land before any text is parsed — so the status owns the whole surface
+ * rather than a badge on white. The overhead glow keeps it from reading flat.
+ */
+.verdict-backdrop {
+  background-image: radial-gradient(
+    900px 520px at 50% -15%,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0) 62%
+  );
+}
+
 /* Small-caps label used across cards ("ROLE", "VENUES", ...) */
 .field-label {
   @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted;

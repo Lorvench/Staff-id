@@ -80,7 +80,6 @@ async function main() {
     name: "John Doe",
     email: "john.doe@lhp.com",
     password: "Staff@1234",
-    photoUrl: "/staff/john-doe.svg",
     status: "ACTIVE",
     dateEngaged: new Date("2025-01-12"),
     roles: ["Guest Relations Officer"],
@@ -92,7 +91,6 @@ async function main() {
     name: "Amaka Obi",
     email: "amaka.obi@lhp.com",
     password: "Staff@1234",
-    photoUrl: "/staff/amaka-obi.svg",
     status: "DISENGAGED",
     dateEngaged: new Date("2023-06-03"),
     roles: ["Floor Supervisor", "Events Host"],
@@ -107,7 +105,7 @@ async function seedStaff(input: {
   name: string;
   email: string;
   password: string;
-  photoUrl: string;
+  photoUrl?: string | null;
   status: "ACTIVE" | "DISENGAGED";
   dateEngaged: Date;
   roles: string[];
@@ -129,14 +127,14 @@ async function seedStaff(input: {
     where: { stfId: input.stfId },
     update: {
       name: input.name,
-      photoUrl: input.photoUrl,
+      photoUrl: input.photoUrl ?? null,
       status: input.status,
       dateEngaged: input.dateEngaged,
     },
     create: {
       stfId: input.stfId,
       name: input.name,
-      photoUrl: input.photoUrl,
+      photoUrl: input.photoUrl ?? null,
       status: input.status,
       dateEngaged: input.dateEngaged,
       userId: user.id,

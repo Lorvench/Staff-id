@@ -36,6 +36,19 @@ const config: Config = {
           soft: "#fee2e2",
           ink: "#991b1b",
         },
+        /**
+         * Verdict surfaces for the public scan page. Deep enough to carry white
+         * text at 10:1+, saturated enough that the answer registers as colour
+         * before any word is read.
+         */
+        verdict: {
+          active: "#0d4a37",
+          "active-ink": "#a7e8c9",
+          invalid: "#5e1c1c",
+          "invalid-ink": "#f6b9b9",
+          unknown: "#24272d",
+          "unknown-ink": "#c7ccd6",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

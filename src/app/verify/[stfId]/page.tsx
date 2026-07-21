@@ -23,186 +23,241 @@ type Props = { params: Promise<{ stfId: string }> };
  * Renders one of three states: VERIFIED, INVALID (disengaged), or NOT FOUND.
  * Reads live from the database at request time and shows only the minimal
  * public-safe field set (name, photo, STF-ID, status).
+ *
+ * Design intent: this is scanned off a badge by a guest or door supervisor,
+ * on a phone, in venue lighting, at arm's length. The verdict is carried by
+ * the full surface colour so it lands before a single word is read; the photo
+ * is sized for a face match at that same distance. Everything else is
+ * deliberately quiet — an ID check that shows more than it needs invites
+ * scrutiny of the wrong things.
  */
 export default async function VerifyPage({ params }: Props) {
   const { stfId } = await params;
   const staff = await getPublicStaffByStfId(decodeURIComponent(stfId).toUpperCase());
-  const verifiedAt = new Date();
+  const checkedAt = new Date();
 
-  return (
-    <main className="page-backdrop flex min-h-screen flex-col items-center justify-center px-4 py-10">
-      {!staff ? (
-        <NotFoundView stfId={stfId} />
-      ) : staff.status === "ACTIVE" ? (
-        <VerifiedView staff={staff} verifiedAt={verifiedAt} />
-      ) : (
-        <InvalidView staff={staff} verifiedAt={verifiedAt} />
-      )}
-
-      <p className="mt-6 text-center text-xs text-ink-faint">
-        Lion Hospitality Partners · Staff Verification
-      </p>
-    </main>
+  if (!staff) return <NotFoundView stfId={stfId} />;
+  return staff.status === "ACTIVE" ? (
+    <VerifiedView staff={staff} checkedAt={checkedAt} />
+  ) : (
+    <InvalidView staff={staff} checkedAt={checkedAt} />
   );
 }
 
 /* -------------------------------------------------------------------------- */
 
-function Shell({ children }: { children: React.ReactNode }) {
+type Tone = "active" | "invalid" | "unknown";
+
+const SURFACE: Record<Tone, string> = {
+  active: "bg-verdict-active",
+  invalid: "bg-verdict-invalid",
+  unknown: "bg-verdict-unknown",
+};
+
+/**
+ * Full-bleed verdict surface. The logo is knocked out to white rather than
+ * boxed on a light chip — a white plate here would read as a second card and
+ * compete with the photo.
+ */
+function Screen({ tone, children }: { tone: Tone; children: React.ReactNode }) {
   return (
-    <article className="animate-fade-scale-in w-full max-w-sm overflow-hidden rounded-3xl bg-paper px-8 py-10 text-center shadow-card-lg">
+    <main
+      className={`verdict-backdrop flex min-h-svh flex-col items-center px-5 pb-10 pt-9 text-white ${SURFACE[tone]}`}
+    >
       <Image
         src="/logo.svg"
         alt="LHP — Lion Hospitality Partners"
-        width={100}
-        height={53}
-        className="mx-auto"
+        width={82}
+        height={44}
         priority
+        className="shrink-0 opacity-80 brightness-0 invert"
       />
-      {children}
-    </article>
+
+      <div className="animate-fade-scale-in flex w-full max-w-sm flex-1 flex-col items-center justify-center py-8 text-center">
+        {children}
+      </div>
+
+      <p className="shrink-0 text-[11px] font-medium uppercase tracking-[0.16em] text-white/45">
+        Lion Hospitality Partners
+      </p>
+    </main>
   );
 }
 
-function VerifiedView({
+/**
+ * The one-glance answer. Solid white plate against the saturated ground gives
+ * the highest contrast available on the screen, so it survives glare and a
+ * dimmed phone.
+ */
+function Verdict({ tone, label }: { tone: Tone; label: string }) {
+  const ink =
+    tone === "active"
+      ? "text-verdict-active"
+      : tone === "invalid"
+        ? "text-verdict-invalid"
+        : "text-verdict-unknown";
+
+  return (
+    <div className="animate-badge-pop inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-2.5 shadow-card">
+      {tone === "active" ? (
+        <CheckIcon className={ink} />
+      ) : tone === "invalid" ? (
+        <CrossIcon className={ink} />
+      ) : (
+        <QueryIcon className={ink} />
+      )}
+      <span className={`text-[15px] font-bold uppercase tracking-[0.13em] ${ink}`}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+/** Photo framed for a face match, not decoration — hence the 128px floor. */
+function Portrait({
   staff,
-  verifiedAt,
+  muted = false,
 }: {
   staff: PublicStaff;
-  verifiedAt: Date;
+  muted?: boolean;
 }) {
   return (
-    <Shell>
-      {/* The badge is the largest element — readable in under a second. */}
-      <div className="animate-badge-pop mt-7 inline-flex items-center gap-2 rounded-full bg-active-soft px-4 py-2">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" fill="currentColor" className="text-active" />
-          <path
-            d="M8 12.5l2.5 2.5L16 9.5"
-            stroke="white"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span className="text-sm font-bold uppercase tracking-[0.12em] text-active-ink">
-          Verified Staff
-        </span>
-      </div>
-
-      <div className="mt-7 flex justify-center">
-        <div className="rounded-full bg-gradient-to-b from-brand-soft to-paper-sunken p-1.5 shadow-sm">
-          <StaffPhoto src={staff.photoUrl} name={staff.name} size={116} />
-        </div>
-      </div>
-
-      <h1 className="mt-5 text-2xl font-bold tracking-tight text-ink">{staff.name}</h1>
-      <p className="mt-1 font-mono text-sm font-medium tracking-wide text-ink-muted">
-        {staff.stfId}
-      </p>
-
-      <div className="mt-7 h-px bg-paper-sunken" />
-
-      <div className="mt-5">
-        <p className="field-label">Status</p>
-        <p className="mt-1 text-base font-bold tracking-tight text-active-ink">ACTIVE</p>
-      </div>
-
-      <p className="mt-7 text-xs leading-relaxed text-ink-faint">
-        Verified {formatDateTime(verifiedAt)}
-      </p>
-    </Shell>
+    <div className="rounded-full bg-white/10 p-1.5 ring-1 ring-inset ring-white/25">
+      <StaffPhoto
+        src={staff.photoUrl}
+        name={staff.name}
+        size={128}
+        className={muted ? "opacity-60 grayscale" : ""}
+      />
+    </div>
   );
 }
 
-function InvalidView({
-  staff,
-  verifiedAt,
-}: {
-  staff: PublicStaff;
-  verifiedAt: Date;
-}) {
+function Identity({ staff }: { staff: PublicStaff }) {
   return (
-    <Shell>
-      <div className="animate-badge-pop mt-7 inline-flex items-center gap-2 rounded-full bg-disengaged-soft px-4 py-2">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" fill="currentColor" className="text-disengaged" />
-          <path
-            d="M9 9l6 6M15 9l-6 6"
-            stroke="white"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
-        </svg>
-        <span className="text-sm font-bold uppercase tracking-[0.12em] text-disengaged-ink">
-          Staff ID Invalid
-        </span>
-      </div>
-
-      <div className="mt-7 flex justify-center">
-        <div className="rounded-full bg-paper-sunken p-1.5">
-          <StaffPhoto
-            src={staff.photoUrl}
-            name={staff.name}
-            size={116}
-            className="opacity-50 grayscale"
-          />
-        </div>
-      </div>
-
-      <h1 className="mt-5 text-2xl font-bold tracking-tight text-ink">{staff.name}</h1>
-      <p className="mt-1 font-mono text-sm font-medium tracking-wide text-ink-muted">
+    <>
+      <h1 className="mt-6 text-pretty font-serif text-[30px] font-bold leading-tight tracking-tight">
+        {staff.name}
+      </h1>
+      <p className="mt-2 font-mono text-sm font-medium tracking-[0.08em] text-white/65">
         {staff.stfId}
       </p>
-
-      <div className="mt-7 h-px bg-paper-sunken" />
-
-      <div className="mt-5">
-        <p className="field-label">Status</p>
-        <p className="mt-1 text-base font-bold tracking-tight text-disengaged-ink">
-          DISENGAGED
-        </p>
-      </div>
-
-      <p className="mt-5 text-sm leading-relaxed text-ink-muted">
-        This staff member is no longer affiliated with the organization.
-      </p>
-
-      <p className="mt-6 text-xs leading-relaxed text-ink-faint">
-        Checked {formatDateTime(verifiedAt)}
-      </p>
-    </Shell>
+    </>
   );
 }
 
+function Timestamp({ label, at }: { label: string; at: Date }) {
+  return (
+    <p className="mt-8 border-t border-white/15 pt-5 text-xs leading-relaxed text-white/55">
+      {label} {formatDateTime(at)}
+    </p>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+
+function VerifiedView({ staff, checkedAt }: { staff: PublicStaff; checkedAt: Date }) {
+  return (
+    <Screen tone="active">
+      <Portrait staff={staff} />
+      <Identity staff={staff} />
+
+      <div className="mt-7">
+        <Verdict tone="active" label="Verified staff" />
+      </div>
+
+      <p className="mt-5 max-w-[30ch] text-sm leading-relaxed text-verdict-active-ink">
+        This badge is active and issued by Lion Hospitality Partners.
+      </p>
+
+      <Timestamp label="Checked" at={checkedAt} />
+    </Screen>
+  );
+}
+
+function InvalidView({ staff, checkedAt }: { staff: PublicStaff; checkedAt: Date }) {
+  return (
+    <Screen tone="invalid">
+      <Portrait staff={staff} muted />
+      <Identity staff={staff} />
+
+      <div className="mt-7">
+        <Verdict tone="invalid" label="Not valid" />
+      </div>
+
+      <p className="mt-5 max-w-[30ch] text-sm leading-relaxed text-verdict-invalid-ink">
+        This person is no longer affiliated with Lion Hospitality Partners. Do not
+        accept this badge.
+      </p>
+
+      <Timestamp label="Checked" at={checkedAt} />
+    </Screen>
+  );
+}
+
+/**
+ * Unknown code. Deliberately neutral rather than red — a mistyped or damaged
+ * code is not an accusation, and colouring it as one trains staff to ignore
+ * the real red.
+ */
 function NotFoundView({ stfId }: { stfId: string }) {
   return (
-    <Shell>
-      <div className="mt-8 flex justify-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-paper-sunken text-ink-muted">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-            <path
-              d="M12 7.5v5M12 16.2h.01"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-      </div>
+    <Screen tone="unknown">
+      <Verdict tone="unknown" label="No record" />
 
-      <h1 className="mt-5 text-lg font-bold tracking-tight text-ink">
-        Verification link invalid
+      <h1 className="mt-7 text-balance font-serif text-[26px] font-bold leading-tight tracking-tight">
+        This code isn&apos;t recognised
       </h1>
-      <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-        This code doesn&apos;t match any staff record. It may be mistyped, expired,
+
+      <p className="mt-3 max-w-[32ch] text-sm leading-relaxed text-verdict-unknown-ink">
+        It doesn&apos;t match any staff record. The badge may be mistyped, damaged,
         or not issued by LHP.
       </p>
 
-      <p className="mt-6 break-all font-mono text-xs text-ink-faint">
+      <p className="mt-7 max-w-full break-all rounded-2xl bg-white/[0.07] px-4 py-3 font-mono text-xs text-white/60">
         {decodeURIComponent(stfId)}
       </p>
-    </Shell>
+    </Screen>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+
+function CheckIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path
+        d="M8 12.5l2.5 2.5L16 9.5"
+        stroke="white"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CrossIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path d="M9 9l6 6M15 9l-6 6" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function QueryIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path
+        d="M12 16.5h.01M9.6 9.4a2.5 2.5 0 114 2.2c-.9.6-1.6 1-1.6 2"
+        stroke="white"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

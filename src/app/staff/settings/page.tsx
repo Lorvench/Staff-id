@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import ResetPasswordForm from "@/app/reset-password/ResetPasswordForm";
 import PageHeader from "@/components/ui/PageHeader";
+import DownloadIdCardButton from "@/components/staff/DownloadIdCardButton";
+import { getStaffById } from "@/lib/staff-service";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +20,8 @@ export default async function StaffSettingsPage() {
   const user = await getCurrentUser();
   if (!user?.staff) redirect("/login");
 
+  const staff = await getStaffById(user.staff.id);
+
   return (
     <div>
       <PageHeader eyebrow="Account · Settings" title="Settings" />
@@ -31,6 +35,23 @@ export default async function StaffSettingsPage() {
           </p>
 
           <ResetPasswordForm role="STAFF" currentPasswordLabel="Current password" />
+        </section>
+
+        <section className="mt-5 rounded-2xl bg-paper p-6 shadow-card">
+          <h2 className="font-serif text-lg font-bold text-ink">Staff ID card</h2>
+          <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">
+            Your card carries your photo, role, venue and a QR code that anyone can
+            scan to confirm you&apos;re current staff. Print it at actual size.
+          </p>
+
+          {staff ? (
+            <DownloadIdCardButton staff={staff} />
+          ) : (
+            <p className="mt-4 text-[13px] text-ink-muted">
+              Your record couldn&apos;t be loaded. Refresh the page or contact your
+              administrator.
+            </p>
+          )}
         </section>
 
         <section className="mt-5 rounded-2xl bg-paper p-6 shadow-card">

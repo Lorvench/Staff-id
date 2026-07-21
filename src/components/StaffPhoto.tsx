@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getInitials } from "@/lib/initials";
 
 /**
  * Staff avatar. Falls back to monogrammed initials when no photo is set, so a
@@ -19,12 +20,7 @@ export default function StaffPhoto({
   size?: number;
   className?: string;
 }) {
-  const initials = name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
+  const initials = getInitials(name);
 
   if (!src) {
     return (
