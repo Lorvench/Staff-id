@@ -71,6 +71,32 @@ export const updateStatusSchema = z.object({
   status: z.enum(["ACTIVE", "DISENGAGED"]),
 });
 
+/**
+ * Edit form input. Derived from `createStaffSchema` so the two forms can never
+ * drift: Staff ID is immutable (badges and QR codes derive from it) and the
+ * login email belongs to the account, not the record — so both are dropped.
+ *
+ * `updateStaffSchema` above stays all-optional because PATCH accepts partials;
+ * this is the stricter shape the edit form itself submits.
+ */
+export const editStaffFormSchema = createStaffSchema.omit({
+  stfId: true,
+  email: true,
+});
+
+// --- Admin: roles & venues --------------------------------------------------
+
+/** Route segment guard — keeps `[kind]` closed to the two real taxonomies. */
+export const taxonomyKindSchema = z.enum(["roles", "venues"]);
+
+export const taxonomyNameSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(60, "Name must be 60 characters or fewer"),
+});
+
 export const staffQuerySchema = z.object({
   q: z.string().trim().optional(),
   status: z.enum(["ACTIVE", "DISENGAGED"]).optional(),
@@ -83,4 +109,16 @@ export const staffQuerySchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateStaffInput = z.infer<typeof createStaffSchema>;
 export type UpdateStaffInput = z.infer<typeof updateStaffSchema>;
+export type EditStaffFormInput = z.infer<typeof editStaffFormSchema>;
 export type StaffQuery = z.infer<typeof staffQuerySchema>;
+export type TaxonomyNameInput = z.infer<typeof taxonomyNameSchema>;
+
+/**
+ * Pre-parse shapes, for `useForm`'s input generic.
+ *
+ * `roles`/`venues` carry `.default([])`, so the schema's input and output types
+ * differ — react-hook-form holds the *input* shape while the resolver hands the
+ * mutation the *output*. Typing `useForm` with both keeps that honest.
+ */
+export type CreateStaffFormValues = z.input<typeof createStaffSchema>;
+export type EditStaffFormValues = z.input<typeof editStaffFormSchema>;

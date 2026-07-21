@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import AppBar from "@/components/AppBar";
-import AdminNav from "@/components/admin/AdminNav";
+import AdminShell from "@/components/admin/AdminShell";
 
 export const dynamic = "force-dynamic";
 
@@ -21,10 +20,5 @@ export default async function AdminLayout({
   if (user.mustResetPw) redirect("/reset-password");
   if (user.role !== "ADMIN") redirect("/staff");
 
-  return (
-    <div className="page-backdrop flex min-h-screen flex-col">
-      <AppBar email={user.email} nav={<AdminNav />} />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
-    </div>
-  );
+  return <AdminShell email={user.email}>{children}</AdminShell>;
 }

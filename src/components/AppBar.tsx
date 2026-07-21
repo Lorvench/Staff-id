@@ -8,16 +8,10 @@ import { apiClient } from "@/lib/api-client";
 import Button from "@/components/ui/Button";
 
 /**
- * Top app bar for authenticated screens.
- * `nav` renders admin navigation; staff screens get the brand + logout only.
+ * Top app bar for the staff-facing screens — brand + logout only.
+ * The admin console uses `AdminShell`'s sidebar instead.
  */
-export default function AppBar({
-  email,
-  nav,
-}: {
-  email: string;
-  nav?: React.ReactNode;
-}) {
+export default function AppBar({ email }: { email: string }) {
   const router = useRouter();
 
   const logout = useMutation({
@@ -31,18 +25,15 @@ export default function AppBar({
   return (
     <header className="sticky top-0 z-20 border-b border-paper-sunken/70 bg-paper/80 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-        <div className="flex items-center gap-6">
-          <Link href="/" aria-label="LHP home" className="shrink-0">
-            <Image
-              src="/logo.svg"
-              alt="LHP — Lion Hospitality Partners"
-              width={64}
-              height={34}
-              priority
-            />
-          </Link>
-          {nav}
-        </div>
+        <Link href="/" aria-label="LHP home" className="shrink-0">
+          <Image
+            src="/logo.svg"
+            alt="LHP — Lion Hospitality Partners"
+            width={64}
+            height={34}
+            priority
+          />
+        </Link>
 
         <div className="flex items-center gap-3">
           <span className="hidden text-xs text-ink-muted sm:inline">{email}</span>

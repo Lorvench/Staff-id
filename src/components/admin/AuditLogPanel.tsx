@@ -23,7 +23,7 @@ export default function AuditLogPanel({
 }) {
   return (
     <section className="mt-4 rounded-2xl bg-paper p-6 shadow-card">
-      <h2 className="text-base font-bold text-ink">Audit log</h2>
+      <h2 className="font-serif text-base font-bold text-ink">Audit log</h2>
       <p className="mt-1 text-xs text-ink-muted">
         Every change to this record, most recent first.
       </p>

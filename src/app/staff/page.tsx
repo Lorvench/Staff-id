@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getStaffById } from "@/lib/staff-service";
-import StaffCard from "@/components/StaffCard";
+import StaffDashboard from "@/components/staff/StaffDashboard";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "My Staff ID" };
+export const metadata: Metadata = { title: "Dashboard" };
 
 /**
  * Digital Staff ID — authenticated, self-only, server-rendered.
@@ -23,21 +23,15 @@ export default async function StaffIdPage() {
 
   if (!staff) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
-        <div className="w-full max-w-sm rounded-3xl bg-paper p-10 text-center shadow-card">
-          <h1 className="text-lg font-semibold text-ink">No staff profile</h1>
-          <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-            We couldn&apos;t find a staff record linked to your account. Please
-            contact your administrator.
-          </p>
-        </div>
-      </main>
+      <div className="rounded-2xl bg-paper p-10 text-center shadow-card">
+        <h1 className="text-lg font-semibold text-ink">No staff profile</h1>
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-ink-muted">
+          We couldn&apos;t find a staff record linked to your account. Please
+          contact your administrator.
+        </p>
+      </div>
     );
   }
 
-  return (
-    <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
-      <StaffCard staff={staff} />
-    </main>
-  );
+  return <StaffDashboard staff={staff} />;
 }

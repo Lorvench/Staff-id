@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import AppBar from "@/components/AppBar";
+import StaffShell from "@/components/staff/StaffShell";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +34,5 @@ export default async function StaffLayout({
     redirect("/login?reason=disengaged");
   }
 
-  return (
-    <div className="page-backdrop flex min-h-screen flex-col">
-      <AppBar email={user.email} />
-      {children}
-    </div>
-  );
+  return <StaffShell email={user.email}>{children}</StaffShell>;
 }

@@ -17,6 +17,11 @@ type Props = {
 /**
  * Modal confirmation step. Required before any destructive or
  * status-changing admin action — a disengage must never be one stray click.
+ *
+ * Sits at z-80, above the drawer layer (z-60/70), because it is raised *from*
+ * a drawer and must cover it. It must also be rendered as a sibling of any
+ * `Drawer`, never inside one: the drawer panel is transformed, which would make
+ * it the containing block for this dialog's `position: fixed` and trap it.
  */
 export default function ConfirmDialog({
   open,
@@ -49,7 +54,7 @@ export default function ConfirmDialog({
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-40 flex items-center justify-center px-4"
+      className="fixed inset-0 z-[80] flex items-center justify-center px-4"
     >
       <button
         aria-label="Cancel"
@@ -57,7 +62,7 @@ export default function ConfirmDialog({
         className="absolute inset-0 cursor-default bg-ink/40 backdrop-blur-sm"
       />
       <div className="animate-fade-scale-in relative w-full max-w-sm rounded-2xl bg-paper p-6 shadow-card-lg">
-        <h2 className="text-base font-bold text-ink">{title}</h2>
+        <h2 className="font-serif text-base font-bold text-ink">{title}</h2>
         <div className="mt-2 text-sm leading-relaxed text-ink-muted">{description}</div>
 
         <div className="mt-6 flex justify-end gap-2">

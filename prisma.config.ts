@@ -1,6 +1,11 @@
-import "dotenv/config";
 import path from "node:path";
+import { config as loadEnv } from "dotenv";
 import { defineConfig, env } from "prisma/config";
+
+// The Prisma CLI doesn't inherit Next.js' env loading, so read the same files
+// Next does — `.env.local` first (it wins), then `.env` as a fallback.
+loadEnv({ path: ".env.local" });
+loadEnv({ path: ".env" });
 
 /**
  * Prisma v7 configuration.
