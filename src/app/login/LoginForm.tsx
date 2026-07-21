@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { apiClient, ApiClientError } from "@/lib/api-client";
 import Button from "@/components/ui/Button";
-import { Input } from "@/components/ui/Field";
+import { Input, PasswordInput } from "@/components/ui/Field";
 
 type LoginResult = {
   role: "ADMIN" | "STAFF";
@@ -57,10 +57,9 @@ export default function LoginForm() {
         required
       />
 
-      <Input
+      <PasswordInput
         id="password"
         label="Password"
-        type="password"
         autoComplete="current-password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}

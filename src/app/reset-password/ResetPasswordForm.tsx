@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiClient, ApiClientError } from "@/lib/api-client";
 import { useUiStore } from "@/store/ui-store";
 import Button from "@/components/ui/Button";
-import { Input } from "@/components/ui/Field";
+import { PasswordInput } from "@/components/ui/Field";
 
 export default function ResetPasswordForm({
   role,
@@ -51,20 +51,18 @@ export default function ResetPasswordForm({
         mutation.mutate();
       }}
     >
-      <Input
+      <PasswordInput
         id="currentPassword"
         label={currentPasswordLabel}
-        type="password"
         autoComplete="current-password"
         value={currentPassword}
         onChange={(e) => setCurrentPassword(e.target.value)}
         required
       />
 
-      <Input
+      <PasswordInput
         id="newPassword"
         label="New password"
-        type="password"
         autoComplete="new-password"
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
@@ -72,10 +70,9 @@ export default function ResetPasswordForm({
         required
       />
 
-      <Input
+      <PasswordInput
         id="confirmPassword"
         label="Confirm new password"
-        type="password"
         autoComplete="new-password"
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
